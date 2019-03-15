@@ -17,10 +17,10 @@
 - Type 'mongo' in different window of terminal to open database.
 - Run $npm i -g mongoui, then run $mongoui to see database structure online for your local mongodb.
 
-<img src="mongoui.png" height="300px" width="500px">
+<img src="mongoui.png" height="400px" width="500px">
 
 * **Use of MongoDB on ServerSide:** 
 - Run $npm install mongoose
 - Mongoose configuration is made in app.js file in the serverSide folder.
 
-<img src="mongoose.png" height="300px" width="500px">
+<img src="mongoose.png" height="200px" width="500px">
