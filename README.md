@@ -17,4 +17,4 @@
 - Type 'mongo' in different window of terminal to open database.
 - Run $npm i -g mongoui, then run $mongoui to see database structure online for your local mongodb.
 
-<img src="mongoui.png" height="300px" width="800px">
+<img src="mongoui.png" height="300px" width="500px">
