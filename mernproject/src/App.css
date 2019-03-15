@@ -34,3 +34,14 @@
 a{
   margin:10px !important;
 }
+.pagination{
+  justify-content: center;
+  margin-top: 20px !important;
+  background-color: beige !important;
+}
+.MuiButton-text-151{
+  background-color: #ffc107 !important;
+}
+.addItemBtn{
+  text-align: center;
+}

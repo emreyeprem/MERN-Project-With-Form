@@ -89,7 +89,8 @@ class VerticalLinearStepper extends Component {
       title:'',
       description:'',
       activeStep: 0,
-      activePage: 15,
+      activePage: 1,
+      itemsPerPage : 5,
       list:[]
     }
   }
@@ -104,6 +105,7 @@ class VerticalLinearStepper extends Component {
       console.log(error)
     })
   }
+
   handlePageChange=(pageNumber) =>{
     console.log(`active page is ${pageNumber}`);
     this.setState({activePage: pageNumber});
@@ -166,18 +168,24 @@ deleteItem = (id)=>{
   render() {
     const { classes } = this.props;
     const steps = getSteps();
-    const { activeStep } = this.state;
-    let item = this.state.list.map((item)=>{
-      return <div className={classes.margin}>
-             <div className="card w-75">
-              <div className="card-body">
-              <h5 className="card-title">{item.title}</h5>
-              <p className="card-text">{item.description}</p>
-              <button onClick={()=>this.deleteItem(item._id)} className="btn btn-warning">DELETE</button>
-              </div>
-              </div>
-              </div>
-    })
+    const { activeStep,title,list, description, activePage,itemsPerPage} = this.state;
+    // Logic for displaying current items
+      const indexOfLastItems = activePage * itemsPerPage;
+      const indexOfFirstItems = indexOfLastItems - itemsPerPage;
+      const currentItems = list.slice(indexOfFirstItems, indexOfLastItems);
+
+      const renderItems = currentItems.map((item, index) => {
+        return <div className={classes.margin}>
+               <div className="card w-75">
+                <div className="card-body">
+                <h5 className="card-title">{item.title}</h5>
+                <p className="card-text">{item.description}</p>
+                <button onClick={()=>this.deleteItem(item._id)} className="btn btn-warning">DELETE</button>
+                </div>
+                </div>
+                </div>
+      });
+
     return (
 
       <div className={classes.root}>
@@ -202,7 +210,7 @@ deleteItem = (id)=>{
                       onClick={activeStep === steps.length - 1 ? this.sendListItem : this.handleNext}
                       className={classes.button}
                     >
-                      {activeStep === steps.length - 1 ? 'ADD ITEM' : 'Next'}
+                      {activeStep === steps.length - 1 ? 'SUBMIT' : 'Next'}
                     </Button>
                   </div>
                 </div>
@@ -215,19 +223,21 @@ deleteItem = (id)=>{
             <Typography>
 
 
-            {item}
+            {renderItems}
 
             </Typography>
             <Pagination
            activePage={this.state.activePage}
-           itemsCountPerPage={10}
-           totalItemsCount={450}
-           pageRangeDisplayed={5}
+           itemsCountPerPage={5}
+           totalItemsCount={75}
+           pageRangeDisplayed={3}
            onChange={this.handlePageChange}
          />
+            <div className="addItemBtn">
             <Button onClick={this.handleReset} className={classes.button}>
               ADD NEW ITEM
             </Button>
+            </div>
           </Paper>
 
 
