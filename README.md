@@ -26,3 +26,5 @@
 <img src="mongoose.png" height="200px" width="500px">
 
 - Created schemas folder, then form model structure including data types of item named as "title" and "description".
+
+![](MERN-ADD/DELETE.gif)
