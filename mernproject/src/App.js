@@ -14,6 +14,11 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import Title from '@material-ui/icons/Title';
 import Description from '@material-ui/icons/Description';
+import ReactDOM from 'react-dom'
+import Pagination from "react-js-pagination";
+import ReactPaginate from 'react-paginate';
+import axios from 'axios'
+import './App.css'
 
 const styles = theme => ({
   root: {
@@ -29,18 +34,23 @@ const styles = theme => ({
   resetContainer: {
     padding: theme.spacing.unit * 3,
   },
-
+  margin: {
+    marginTop: "15px"
+  }
 });
-
+var title = ""
+var description = ""
 function getSteps() {
   return ['Title', 'Description', 'Submit'];
 }
-
 
 function getStepContent(step) {
   switch (step) {
     case 0:
       return <TextField
+        onChange = {(event)=>{
+          title = event.target.value
+          console.log(title)}}
         id="input-with-icon-textfield"
         InputProps={{
           startAdornment: (
@@ -52,6 +62,9 @@ function getStepContent(step) {
       />;
     case 1:
       return <TextField
+      onChange = {(event)=>{
+        description = event.target.value
+        console.log(description)}}
         id="input-with-icon-textfield"
         InputProps={{
           startAdornment: (
@@ -69,17 +82,75 @@ function getStepContent(step) {
   }
 }
 
-class VerticalLinearStepper extends React.Component {
-  state = {
-    activeStep: 0,
-  };
-
+class VerticalLinearStepper extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      title:'',
+      description:'',
+      activeStep: 0,
+      activePage: 15,
+      list:[]
+    }
+  }
+  componentDidMount = ()=>{
+    axios.get('http://localhost:3003/getList').then((response)=>{
+      console.log(response.data)
+      this.setState({
+        ...this.state,
+        list: response.data
+      })
+    }).catch((error)=>{
+      console.log(error)
+    })
+  }
+  handlePageChange=(pageNumber) =>{
+    console.log(`active page is ${pageNumber}`);
+    this.setState({activePage: pageNumber});
+  }
   handleNext = () => {
     this.setState(state => ({
+      ...this.state,
       activeStep: state.activeStep + 1,
-    }));
+    })
+  )
   };
-
+sendListItem = ()=>{
+  this.setState(state => ({
+    ...this.state,
+    activeStep: state.activeStep + 1,
+    title: title,
+    description: description,
+  }),()=>{
+    axios.post('http://localhost:3003/sendListItem',{
+      title: this.state.title,
+      description: this.state.description
+    }).then((response)=>{
+      console.log(response.data)
+      this.setState({
+      list: [...this.state.list, response.data.newAddedItem]  // adding new item to existing list
+      })
+    }).catch((error)=>{
+      console.log(error)
+    })
+  });
+}
+deleteItem = (id)=>{
+  axios.get(`http://localhost:3003/delete/${id}`).then((response)=>{
+    console.log(response.data)
+    if(response.data.success == true){
+      let updatedList = this.state.list.filter((item)=>{
+        return item._id !== id
+      })
+      this.setState({
+        ...this.state,
+        list: updatedList
+      })
+    }
+  }).catch((error)=>{
+    console.log(error)
+  })
+}
   handleBack = () => {
     this.setState(state => ({
       activeStep: state.activeStep - 1,
@@ -96,8 +167,19 @@ class VerticalLinearStepper extends React.Component {
     const { classes } = this.props;
     const steps = getSteps();
     const { activeStep } = this.state;
-
+    let item = this.state.list.map((item)=>{
+      return <div className={classes.margin}>
+             <div className="card w-75">
+              <div className="card-body">
+              <h5 className="card-title">{item.title}</h5>
+              <p className="card-text">{item.description}</p>
+              <button onClick={()=>this.deleteItem(item._id)} className="btn btn-warning">DELETE</button>
+              </div>
+              </div>
+              </div>
+    })
     return (
+
       <div className={classes.root}>
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((label, index) => (
@@ -117,7 +199,7 @@ class VerticalLinearStepper extends React.Component {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={this.handleNext}
+                      onClick={activeStep === steps.length - 1 ? this.sendListItem : this.handleNext}
                       className={classes.button}
                     >
                       {activeStep === steps.length - 1 ? 'ADD ITEM' : 'Next'}
@@ -128,14 +210,27 @@ class VerticalLinearStepper extends React.Component {
             </Step>
           ))}
         </Stepper>
-        {activeStep === steps.length && (
+
           <Paper square elevation={0} className={classes.resetContainer}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
+            <Typography>
+
+
+            {item}
+
+            </Typography>
+            <Pagination
+           activePage={this.state.activePage}
+           itemsCountPerPage={10}
+           totalItemsCount={450}
+           pageRangeDisplayed={5}
+           onChange={this.handlePageChange}
+         />
             <Button onClick={this.handleReset} className={classes.button}>
-              Reset
+              ADD NEW ITEM
             </Button>
           </Paper>
-        )}
+
+
       </div>
     );
   }

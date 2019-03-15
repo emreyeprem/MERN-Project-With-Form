@@ -31,3 +31,38 @@ app.listen(PORT, function(){
   console.log('Server is running...')
 })
 //===========================================================
+app.post('/sendListItem',function(req,res){
+ let title = req.body.title
+ let description = req.body.description
+ console.log(title,description)
+
+ let listItem = new MERNList({title:title,description:description})
+   listItem.save((error, newAddedItem)=>{
+     if(error){
+       console.log(error)
+       res.status(500).json({error: "Unable to post"})
+       return
+     }
+     console.log(newAddedItem)
+     res.json({'success':true, 'newAddedItem' : newAddedItem})
+
+ })
+})
+app.get('/getList',function(req,res){
+
+  MERNList.find({},(error,items) => {
+     res.json(items)
+   })
+
+})
+app.get('/delete/:id',function(req,res){
+  let itemId = req.params.id
+  console.log(itemId)
+ MERNList.findByIdAndDelete(itemId,(error,item)=>{
+  if(error) {
+     res.status(500).json({error: 'Unable to delete..'})
+     return
+      }
+      res.json({success: true})
+   })
+})
