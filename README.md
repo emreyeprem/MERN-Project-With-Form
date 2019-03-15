@@ -27,4 +27,4 @@
 
 - Created schemas folder, then form model structure including data types of item named as "title" and "description".
 
-![](MERN-ADD/DELETE.gif)
+![](MERN-ADD:DELETE.gif)
