@@ -26,6 +26,8 @@
 <img src="mongoose.png" height="200px" width="500px">
 
 - Created schemas folder, then form model structure including data types of item named as "title" and "description".
+- Exported the model from schemas/mernlist.js file and import it as MERNList in app.js file.
+- Applied 'addItem', 'deleteItem' and 'getList' APIs using mongodb built in function applied with MERNList.
 
 ![](mernform.gif)
 
